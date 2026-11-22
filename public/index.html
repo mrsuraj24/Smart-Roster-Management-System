@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Smart Roster Management System</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">SR</div><div><b>Smart Roster</b><small>Operations Manager</small></div></div>
+    <nav>
+      <button class="nav active" data-page="dashboard">Dashboard</button>
+      <button class="nav" data-page="roster">Monthly Roster</button>
+      <button class="nav" data-page="coverage">Coverage & Conflicts</button>
+      <button class="nav" data-page="employees">Employees</button>
+      <button class="nav" data-page="assignments">Assignments</button>
+      <button class="nav" data-page="rules">Rules & Holidays</button>
+    </nav>
+    <div class="side-note"><b>Assessment build</b><br>30 employees · 12 brands · 6 pods<br><span>Local SQLite database</span></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><div class="eyebrow">DATASTRAW · ROSTER CONTROL</div><h1 id="pageTitle">Dashboard</h1></div>
+      <div class="top-actions"><span id="statusDot" class="status"><i></i> System ready</span><button class="btn secondary" onclick="showHelp()">How it works</button></div>
+    </header>
+
+    <section id="dashboard" class="page active">
+      <div class="hero">
+        <div><div class="eyebrow">MONTHLY OPERATIONS</div><h2>Plan smarter. Validate before publishing.</h2>
+        <p>Generate a roster while respecting employee availability, weekly offs, holidays and process coverage.</p></div>
+        <div class="hero-actions"><input type="month" id="dashMonth"><button class="btn primary" onclick="generateRoster()">Generate roster</button></div>
+      </div>
+      <div class="cards" id="summaryCards"></div>
+      <div class="grid-2">
+        <div class="panel"><div class="panel-head"><h3>Quick actions</h3></div>
+          <div class="quick">
+            <button onclick="go('roster')">View monthly roster <span>→</span></button>
+            <button onclick="go('coverage')">Run coverage validation <span>→</span></button>
+            <button onclick="go('assignments')">Manage resource assignments <span>→</span></button>
+          </div>
+        </div>
+        <div class="panel"><div class="panel-head"><h3>Scheduling principles</h3></div>
+          <ul class="principles"><li>Coverage is a mandatory constraint.</li><li>Weekly offs and leave are respected when possible.</li><li>Unresolved gaps are surfaced instead of hidden.</li><li>Shared resources are flagged for manager review.</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="roster" class="page">
+      <div class="toolbar"><div><h2>Monthly roster</h2><p class="muted">Company-wide employee schedule.</p></div>
+      <div class="filters"><input type="month" id="rosterMonth"><button class="btn primary" onclick="generateRoster()">Generate</button><button class="btn secondary" onclick="downloadCSV()">Export CSV</button></div></div>
+      <div id="rosterMeta"></div><div class="table-wrap"><table id="rosterTable"></table></div>
+    </section>
+
+    <section id="coverage" class="page">
+      <div class="toolbar"><div><h2>Coverage & conflicts</h2><p class="muted">Mandatory gaps are separated from review warnings.</p></div>
+      <div class="filters"><input type="month" id="coverageMonth"><button class="btn primary" onclick="loadCoverage()">Validate</button></div></div>
+      <div class="cards compact" id="conflictStats"></div>
+      <div class="panel"><div class="panel-head"><h3>Issues requiring attention</h3></div><div id="conflicts"></div></div>
+    </section>
+
+    <section id="employees" class="page">
+      <div class="toolbar"><div><h2>Employees</h2><p class="muted">Team, pod and weekly-off configuration.</p></div><button class="btn secondary" onclick="loadEmployees()">Refresh</button></div>
+      <div class="table-wrap"><table id="employeesTable"></table></div>
+    </section>
+
+    <section id="assignments" class="page">
+      <div class="toolbar"><div><h2>Resource assignments</h2><p class="muted">Add or remove employees from brand/process responsibilities.</p></div></div>
+      <div class="panel form-panel">
+        <h3>Add assignment</h3>
+        <div class="form-grid"><select id="aEmployee"></select><select id="aBrand"></select><select id="aProcess"></select><button class="btn primary" onclick="addAssignment()">Add assignment</button></div>
+      </div>
+      <div class="table-wrap"><table id="assignmentsTable"></table></div>
+    </section>
+
+    <section id="rules" class="page">
+      <div class="toolbar"><div><h2>Rules & holidays</h2><p class="muted">Operating calendars used by the scheduling engine.</p></div></div>
+      <div class="grid-2">
+        <div class="panel"><div class="panel-head"><h3>Brand calendars</h3></div><div id="brandsRules"></div></div>
+        <div class="panel"><div class="panel-head"><h3>Public holidays</h3></div><div id="holidays"></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="toast" class="toast"></div>
+<div id="help" class="modal hidden"><div class="modal-card"><button class="x" onclick="hideHelp()">×</button><h2>How this roster works</h2>
+<p>The system keeps employees, pods, brands, processes and assignments in SQLite. When a month is generated, every required process/day is checked against assigned employees who are not on leave and are not on their weekly off.</p>
+<p><b>Important:</b> a coverage gap is never silently filled. It is shown as a conflict so the operations manager can add a backup resource or change the rule.</p>
+</div></div>
+<script src="/app.js"></script>
+</body>
+</html>
